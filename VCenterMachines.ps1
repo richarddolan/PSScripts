@@ -27,16 +27,22 @@ $vminfo = @()
             foreach($vm in (Get-Cluster -Name $cluster | Get-VM))
         {
                 $VMView = $vm | Get-View
-                $VMSummary = "" | Select ClusterName,HostName,VMName,VMSockets,VMCores,CPUSockets,CPUCores,VMMem
+                $VMSummary = "" | Select ClusterName,HostName,VMName,VMGuestOS,VMSockets,VMCores,CPUSockets,CPUCores,VMMem, VMPowerState, VMNumCPUs, VMMemoryGB, VMNotes
                 $VMSummary.VMName = $vm.Name
+				$VMSummary.VMGuestOS = $VMView.config.guestFullName
                 $VMSummary.VMSockets = $VMView.Config.Hardware.NumCpu
                 $VMSummary.VMCores = $VMView.Config.Hardware.NumCoresPerSocket
                 $VMSummary.VMMem = $VMView.Config.Hardware.MemoryMB
+				$VMSummary.VMPowerState = $vm.PowerState
+				$VMSummary.VMNumCPUs = $vm.NumCpu
+				$VMSummary.VMMemoryGB = $vm.MemoryGB
+				$VMSummary.VMNotes = $vm.Notes
 
                 $vminfo += $VMSummary
             }
 
 $vminfo|export-csv ProdMachines.csv -notypeinfo
+#$hostinfo|export-csv ProdHosts.csv -notypeinfo
 <#
 ## This section is where you paste the code output by powerBI
 $endpoint = "https://api.powerbi.com/beta/8f1328c8-5ddd-42b4-8308-60ea7e68cb37/datasets/f9584acb-b547-4b6a-bea5-39e05e26bd59/rows?key=btEMpbbpNmGanhZm8qGvSqH3G85foNC7xvNP%2FDCaBAbkIsRRt7Ukm31wHEkfeJOb%2FyAxb%2BpuygJ%2FlQuJBkNQxw%3D%3D"
